@@ -1,5 +1,5 @@
 # lib/models/project.py
-from lib.__init__ import CURSOR, CONN
+from models.__init__ import CURSOR, CONN
 
 
 class Project:

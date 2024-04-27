@@ -1,4 +1,4 @@
-from lib.helpers import (
+from helpers import (
     exit_program,
     list_projects,
     find_project_by_name,

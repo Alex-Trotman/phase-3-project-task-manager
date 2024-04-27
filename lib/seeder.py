@@ -11,15 +11,12 @@ def seed_database():
     Task.create_table()
 
     # Create seed data
-    project_1 = Project.create("Project 1", "Building A, 5th Floor")
-    project_2 = Project.create(
-        "Project 2", "Building C, East Wing")
-    Task.create("Example Name 1", "Accountant", project_1.id)
-    Task.create("Example Name 2", "Manager", project_1.id)
-    Task.create("Example Name 3", "Manager", project_1.id)
-    Task.create("Example Name 4", "Benefits Coordinator", project_2.id)
-    Task.create("Example Name 5", "New Hires Coordinator", project_2.id)
-
+    project_1 = Project.create("Software Development", "Developing new application features")
+    project_2 = Project.create("Marketing Campaign", "Launching new advertising campaign")
+    Task.create("Implement login functionality", "Implement user authentication system", project_1.id)
+    Task.create("Design homepage layout", "Create wireframes for the homepage design", project_1.id)
+    Task.create("Prepare social media posts", "Create content for Facebook, Instagram, and Twitter", project_2.id)
+    Task.create("Conduct market research", "Analyze market trends and customer preferences", project_2.id)
 
 seed_database()
 print("Seeded database")
