@@ -14,14 +14,29 @@ def clear():
 def list_projects():
     projects = Project.get_all()
     for project in projects:
-        print(project)
+        print(f"{project.name}: {project.description}")
 
 
 def find_project_by_name():
     name = input("Enter the project's name: ")
-    project = Project.find_by_name(name)
-    print(project) if project else print(
-        f'Project {name} not found')
+    projects = Project.get_all()
+    matching_projects = [project for project in projects if name.lower() in project.name.lower()]
+    if matching_projects:
+        if len(matching_projects) == 1:
+            print(f"Project found: {matching_projects[0].name}: {matching_projects[0].description}")
+        else:
+            print("Did you mean one of these projects?")
+            for project in matching_projects:
+                print(f"- {project.name}")
+    else:
+        print(f'No projects found matching "{name}"')
+
+
+# def find_project_by_name():
+#     name = input("Enter the project's name: ")
+#     project = Project.find_by_name(name)
+#     print(project) if project else print(
+#         f'Project {name} not found')
 
 
 def find_project_by_id():
