@@ -167,7 +167,7 @@ class Project:
 
     def tasks(self):
         """Return list of tasks associated with current project"""
-        from lib.models.task import Task
+        from models.task import Task
         sql = """
             SELECT * FROM tasks
             WHERE project_id = ?

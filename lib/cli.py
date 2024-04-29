@@ -12,7 +12,8 @@ from helpers import (
     find_task_by_id,
     create_task,
     update_task,
-    delete_task
+    delete_task,
+    clear
 )
 
 
@@ -22,6 +23,8 @@ def main():
         choice = input("> ")
         if choice == "0":
             exit_program()
+        elif choice == "clear":
+            clear()
         elif choice == "1":
             list_projects()
         elif choice == "2":
@@ -53,6 +56,8 @@ def main():
 
 
 def menu():
+    print("Type 'clear' to clear the terminal")
+    print("*" * 100)
     print("Please select an option:")
     print("0. Exit the program")
     print("1. List all projects")

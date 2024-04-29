@@ -1,11 +1,14 @@
 # lib/helpers.py
-
+import os
 from models.project import Project
 from models.task import Task
 
 def exit_program():
     print("Goodbye!")
     exit()
+
+def clear():
+    os.system("clear")
 
 # Project helpers
 def list_projects():
