@@ -2,6 +2,10 @@
 import os
 from models.project import Project
 from models.task import Task
+from rich.console import Console
+from rich.table import Table
+
+console = Console()
 
 def exit_program():
     print("Goodbye!")
@@ -14,7 +18,13 @@ def clear():
 def list_projects():
     projects = Project.get_all()
     for project in projects:
-        print(f"{project.name}: {project.description}")
+        console.print("[bold magenta]Todos[/bold magenta]!", "💻") # print(f"{project.name}: {project.description}")
+
+        table = Table(show_header=True, header_style="bold blue")
+        table.add_column("#", style="dim", width=6)
+        table.add_column("Todo", min_width=20)
+        table.add_column("Category", min_width=12, justify="right")
+        table.add_column("Done", min_width=12, justify="right")
 
 
 def find_project_by_name():
