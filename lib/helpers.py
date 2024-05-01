@@ -14,17 +14,20 @@ def exit_program():
 def clear():
     os.system("clear")
 
+
 # Project helpers
 def list_projects():
     projects = Project.get_all()
-    for project in projects:
-        console.print("[bold magenta]Todos[/bold magenta]!", "💻") # print(f"{project.name}: {project.description}")
 
-        table = Table(show_header=True, header_style="bold blue")
-        table.add_column("#", style="dim", width=6)
-        table.add_column("Todo", min_width=20)
-        table.add_column("Category", min_width=12, justify="right")
-        table.add_column("Done", min_width=12, justify="right")
+    table = Table(title="Projects")
+    table.add_column("#")
+    table.add_column("Name")
+    table.add_column("Description")
+    
+    for project in projects:
+        table.add_row(str(project.id), project.name, project.description)
+
+    console.print(table)
 
 
 def find_project_by_name():
@@ -33,11 +36,26 @@ def find_project_by_name():
     matching_projects = [project for project in projects if name.lower() in project.name.lower()]
     if matching_projects:
         if len(matching_projects) == 1:
-            print(f"Project found: {matching_projects[0].name}: {matching_projects[0].description}")
+            table = Table(title="Projects")
+            table.add_column("#")
+            table.add_column("Name")
+            table.add_column("Description")
+
+            table.add_row(str(matching_projects[0].id), matching_projects[0].name, matching_projects[0].description)
+
+            console.print(table)
+
+            # print(f"Project found: {matching_projects[0].name}: {matching_projects[0].description}")
         else:
             print("Did you mean one of these projects?")
+
+            table = Table(title="Projects")
+            table.add_column("#")
+            table.add_column("Name")
+            table.add_column("Description")
             for project in matching_projects:
-                print(f"- {project.name}")
+                table.add_row(str(project.id), project.name, project.description)
+            console.print(table)
     else:
         print(f'No projects found matching "{name}"')
 
