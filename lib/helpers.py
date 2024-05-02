@@ -15,7 +15,6 @@ def clear():
     os.system("clear")
 
 
-# Project helpers
 def list_projects():
     projects = Project.get_all()
 
@@ -24,10 +23,38 @@ def list_projects():
     table.add_column("Name")
     table.add_column("Description")
     
-    for project in projects:
-        table.add_row(str(project.id), project.name, project.description)
-
+    for index, project in enumerate(projects, start=1):
+        table.add_row(str(index), project.name, project.description)
+    clear()
     console.print(table)
+
+def open_project():
+    # Get all projects
+    projects = Project.get_all()
+    # Create a dictionary to map enumerated indices to project IDs
+    index_to_id = {}
+    
+    # Create reference table for projects
+    table = Table(title="Projects")
+    table.add_column("#")
+    table.add_column("Name")
+    table.add_column("Description")
+    
+    # Populate the table and dictionary
+    for index, project in enumerate(projects, start=1):
+        table.add_row(str(index), project.name, project.description)
+        index_to_id[index] = project.id
+    
+    clear()
+    console.print(table)
+    
+    # User selects which project to enter
+    selected_index = int(input("Select project to enter: "))
+    # Retrieve the actual project ID from the dictionary
+    selected_project_id = index_to_id.get(selected_index)
+    
+    # Return the id of the selected project
+    return selected_project_id
 
 
 def find_project_by_name():
@@ -119,39 +146,24 @@ def delete_project():
         print(f'Project {id_} not found')
 
 
-def list_project_tasks():
-    projects = Project.get_all()
-    table = Table(title="Projects")
-    table.add_column("#")
-    table.add_column("Name")
-    table.add_column("Description")
-    
-    for project in projects:
-        table.add_row(str(project.id), project.name, project.description)
-
-    console.print(table)
-
-    project_id = input("Enter the project's id: ")
+def list_project_tasks(project_id):
     project = Project.find_by_id(project_id)
     
     if project:
-        print(f"Listing tasks for Project {project_id}: {project.name}")
         tasks = project.tasks()
-        if tasks:
-
-            table = Table(title=f'{project.name}')
-            table.add_column("#")
-            table.add_column("Name")
-            table.add_column("Description")
-
-            for task in tasks:
-                table.add_row(str(task.id), task.name, task.description)
-            print("*" * 100)
-            console.print(table)
-        else:
-            print("No tasks found in this project.")
+        table = Table(title=f'{project.name} Tasks')
+        table.add_column("#")
+        table.add_column("Name")
+        table.add_column("Description")
+        
+        # Using enumerate to assign an index starting from 1 to each task
+        for index, task in enumerate(tasks, start=1):
+            table.add_row(str(index), task.name, task.description)
+        print("*" * 100)
+        console.print(table)
     else:
         print(f"Project with ID {project_id} not found")
+
 
 # Task helpers
 def list_tasks():
@@ -182,10 +194,9 @@ def find_task_by_id():
     print(task) if task else print(f'Task {id_} not found')
 
 
-def create_task():
+def create_task(project_id):
     name = input("Enter the task's name: ")
     description = input("Enter the task's description: ")
-    project_id = input("Enter the task's project id: ")
     try:
         task = Task.create(name, description, project_id)
         print(f'Success: {task}')
@@ -193,21 +204,49 @@ def create_task():
         print("Error creating task: ", exc)
 
 
-def update_task():
-    id_ = input("Enter the task's id: ")
-    if task := Task.find_by_id(id_):
+def edit_task(project_id):
+    project = Project.find_by_id(project_id)
+    if not project:
+        print(f"Project with ID {project_id} not found")
+        return
+
+    tasks = project.tasks()
+    if not tasks:
+        print("No tasks found for this project.")
+        return
+
+    # Create a mapping from index to task ID
+    index_to_id = {}
+    for index, task in enumerate(tasks, start=1):
+        index_to_id[index] = task.id
+
+    try:
+        selected_index = int(input("Enter task number to select: "))
+        selected_task_id = index_to_id[selected_index]  # Retrieve the actual task ID using the index
+    except (ValueError, KeyError):
+        clear()
+        print("Invalid task selection.")
+        return
+
+    if task := Task.find_by_id(selected_task_id):
         try:
             name = input("Enter the task's new name: ")
-            task.name = name
             description = input("Enter the task's new description: ")
+            
+            # Updating task properties
+            task.name = name
             task.description = description
-
+            
+            # Assuming task.update() commits the changes
             task.update()
-            print(f'Success: {task}')
+            clear()
+            list_project_tasks(project_id)
+            print("Success: Task updated")
         except Exception as exc:
             print("Error updating task: ", exc)
     else:
-        print(f'Task {id_} not found')
+        print(f"Task with ID {selected_task_id} not found")
+
 
 
 def delete_task():

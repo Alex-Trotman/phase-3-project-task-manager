@@ -12,8 +12,8 @@ class Project:
         self.name = name
         self.description = description
 
-    def __repr__(self):
-        return f"<Project {self.id}: {self.name}, {self.description}>"
+    # def __repr__(self):
+    #     return f"<Project {self.id}: {self.name}, {self.description}>"
 
     @property
     def name(self):

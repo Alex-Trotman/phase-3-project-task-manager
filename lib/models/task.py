@@ -10,8 +10,8 @@ class Task:
         self.description = description
         self.project_id = project_id
 
-    def __repr__(self):
-        return f"<Task {self.id}: {self.name}, {self.description}>"
+    # def __repr__(self):
+    #     return f"<Task {self.id}: {self.name}, {self.description}>"
 
     @property
     def name(self):
