@@ -70,7 +70,17 @@ def find_project_by_name():
 def find_project_by_id():
     id_ = input("Enter the project's id: ")
     project = Project.find_by_id(id_)
-    print(project) if project else print(f'Project {id_} not found')
+    if project:
+        table = Table(title="Projects")
+        table.add_column("#")
+        table.add_column("Name")
+        table.add_column("Description")
+
+        table.add_row(str(project.id), project.name, project.description)
+        print("*" * 100)
+        console.print(table)
+    else:
+         print(f'Project {id_} not found')
 
 
 def create_project():
@@ -110,6 +120,17 @@ def delete_project():
 
 
 def list_project_tasks():
+    projects = Project.get_all()
+    table = Table(title="Projects")
+    table.add_column("#")
+    table.add_column("Name")
+    table.add_column("Description")
+    
+    for project in projects:
+        table.add_row(str(project.id), project.name, project.description)
+
+    console.print(table)
+
     project_id = input("Enter the project's id: ")
     project = Project.find_by_id(project_id)
     
@@ -117,8 +138,16 @@ def list_project_tasks():
         print(f"Listing tasks for Project {project_id}: {project.name}")
         tasks = project.tasks()
         if tasks:
+
+            table = Table(title=f'{project.name}')
+            table.add_column("#")
+            table.add_column("Name")
+            table.add_column("Description")
+
             for task in tasks:
-                print(task)
+                table.add_row(str(task.id), task.name, task.description)
+            print("*" * 100)
+            console.print(table)
         else:
             print("No tasks found in this project.")
     else:
@@ -127,8 +156,17 @@ def list_project_tasks():
 # Task helpers
 def list_tasks():
     tasks = Task.get_all()
+
+    table = Table(title="Tasks")
+    table.add_column("#")
+    table.add_column("Name")
+    table.add_column("Description")
+    table.add_column("Project")
+    
     for task in tasks:
-        print(task)
+        table.add_row(str(task.id), task.name, task.description, str(task.project_id))
+
+    console.print(table)
 
 
 def find_task_by_name():
