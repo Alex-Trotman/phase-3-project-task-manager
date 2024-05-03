@@ -14,7 +14,8 @@ from helpers import (
     edit_task,
     delete_task,
     clear,
-    open_project
+    open_project,
+    manage_projects
 )
 import typer
 
@@ -33,8 +34,8 @@ def main():
             selected_project = open_project()
             clear()
             project_loop(selected_project)
-        # elif choice == "3":
-        #     find_project_by_id()
+        elif choice == "3":
+            manage_projects()
         # elif choice == "4":
         #     create_project()
         # elif choice == "5":
@@ -57,7 +58,6 @@ def main():
         #     delete_task()
         else:
             print("Invalid choice")
-
 
 def project_loop(project_id):
     list_project_tasks(project_id)

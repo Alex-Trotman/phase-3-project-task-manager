@@ -56,6 +56,8 @@ def open_project():
     # Return the id of the selected project
     return selected_project_id
 
+def manage_projects():
+    list_projects()
 
 def find_project_by_name():
     name = input("Enter the project's name: ")
