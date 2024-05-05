@@ -201,10 +201,18 @@ def find_task_by_id():
 def create_task(project_id):
     name = input("Enter the task's name: ")
     description = input("Enter the task's description: ")
-    priority = input("Enter the task's priority (1-4): ")
-    print("RIGHT HERE, ", type(priority))
+    while True:
+        priority = input("Enter the task's priority (1-4): ")
+        try:
+            priority = int(priority)
+            if 1 <= priority <= 4:
+                break
+            else:
+                print("Priority must be an integer between 1 and 4.")
+        except ValueError:
+            print("Priority must be a valid integer.")
+
     try:
-        priority = int(priority)  # Convert input to integer
         task = Task.create(name, description, project_id, priority)
         clear()
         list_project_tasks(project_id)
@@ -213,6 +221,7 @@ def create_task(project_id):
         print("Error: Priority must be a valid integer between 1 and 4")
     except Exception as exc:
         print("Error creating task: ", exc)
+
 
 
 
@@ -244,14 +253,20 @@ def edit_task(project_id):
 
     if task := Task.find_by_id(selected_task_id):
         try:
-            name = input("Enter the task's new name: ")
-            description = input("Enter the task's new description: ")
-            priority = input("Enter the task's new priority: ")
-            
+            print("Enter the task's new name (press Enter to keep it unchanged):")
+            name = input(f"Current name: {task.name}: ") or task.name
+
+            print("Enter the task's new description (press Enter to keep it unchanged):")
+            description = input(f"Current description: {task.description}: ") or task.description
+
+            print("Enter the task's new priority (1-4) (press Enter to keep it unchanged):")
+            priority = input(f"Current priority: {task.priority}: ")
+            priority = int(priority) if priority else task.priority
+
             # Updating task properties
             task.name = name
             task.description = description
-            task._priority = priority
+            task.priority = priority
             
             # Assuming task.update() commits the changes
             task.update()
@@ -264,12 +279,41 @@ def edit_task(project_id):
         print(f"Task with ID {selected_task_id} not found")
 
 
+def delete_task(project_id):
+    project = Project.find_by_id(project_id)
+    if not project:
+        print(f"Project with ID {project_id} not found")
+        return
 
-def delete_task():
-    id_ = input("Enter the task's id: ")
-    if task := Task.find_by_id(id_):
-        task.delete()
-        print(f'Task {id_} deleted')
-    else:
-        print(f'Task {id_} not found')
+    tasks = project.tasks()
+    if not tasks:
+        print("No tasks found for this project.")
+        return
+
+    # Create a mapping from index to task ID
+    index_to_id = {}
+    for index, task in enumerate(tasks, start=1):
+        index_to_id[index] = task.id
+
+    try:
+        selected_index = int(input("Enter task number to delete: "))
+        selected_task_id = index_to_id[selected_index]  # Retrieve the actual task ID using the index
+        confirmation = input("Are you sure you want to delete this task? (yes/no): ").strip().lower()
+        if confirmation == "yes":
+            if task := Task.find_by_id(selected_task_id):
+                task.delete()
+                clear()
+                list_project_tasks(project_id)
+                print(f'Selected task: {task.name} deleted')
+            else:
+                print(f'Selected task: {selected_index} not found')
+        else:
+            clear()
+            list_project_tasks(project_id)
+            print("Deletion cancelled.")
+    except (ValueError, KeyError):
+        clear()
+        print("Invalid task selection.")
+
+
 

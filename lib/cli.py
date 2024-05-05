@@ -62,8 +62,6 @@ def main():
 def project_loop(project_id):
     list_project_tasks(project_id)
     while True:
-        # clear()
-        # list_project_tasks(project_id)
         task_menu()
         choice = input("> ")
         if choice == "0":
@@ -78,7 +76,7 @@ def project_loop(project_id):
         elif choice == "3":
             complete_task()
         elif choice == "4":
-            delete_task()
+            delete_task(project_id)
 
 
         
@@ -88,7 +86,7 @@ def task_menu():
     print("1. Create task")
     print("2. Edit task")
     print("3. Complete task")
-    print("3. Delete task")
+    print("4. Delete task")
 
 
 def menu():
