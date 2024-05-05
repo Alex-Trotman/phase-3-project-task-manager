@@ -157,10 +157,11 @@ def list_project_tasks(project_id):
         table.add_column("#")
         table.add_column("Name")
         table.add_column("Description")
+        table.add_column("Priority")
         
         # Using enumerate to assign an index starting from 1 to each task
         for index, task in enumerate(tasks, start=1):
-            table.add_row(str(index), task.name, task.description)
+            table.add_row(str(index), task.name, task.description, str(task.priority))
         print("*" * 100)
         console.print(table)
     else:
@@ -175,10 +176,11 @@ def list_tasks():
     table.add_column("#")
     table.add_column("Name")
     table.add_column("Description")
+    table.add_column("Priority")
     table.add_column("Project")
     
     for task in tasks:
-        table.add_row(str(task.id), task.name, task.description, str(task.project_id))
+        table.add_row(str(task.id), task.name, task.description, str(task.priority), str(task.project_id))
 
     console.print(table)
 
@@ -199,11 +201,21 @@ def find_task_by_id():
 def create_task(project_id):
     name = input("Enter the task's name: ")
     description = input("Enter the task's description: ")
+    priority = input("Enter the task's priority (1-4): ")
+    print("RIGHT HERE, ", type(priority))
     try:
-        task = Task.create(name, description, project_id)
+        priority = int(priority)  # Convert input to integer
+        task = Task.create(name, description, project_id, priority)
+        clear()
+        list_project_tasks(project_id)
         print(f'Success: {task}')
+    except ValueError:
+        print("Error: Priority must be a valid integer between 1 and 4")
     except Exception as exc:
         print("Error creating task: ", exc)
+
+
+
 
 
 def edit_task(project_id):
@@ -234,10 +246,12 @@ def edit_task(project_id):
         try:
             name = input("Enter the task's new name: ")
             description = input("Enter the task's new description: ")
+            priority = input("Enter the task's new priority: ")
             
             # Updating task properties
             task.name = name
             task.description = description
+            task._priority = priority
             
             # Assuming task.update() commits the changes
             task.update()

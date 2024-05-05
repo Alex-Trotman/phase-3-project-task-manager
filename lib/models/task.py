@@ -4,11 +4,12 @@ from models.__init__ import CURSOR, CONN
 class Task:
     all = {}
 
-    def __init__(self, name, description, project_id, id=None):
+    def __init__(self, name, description, project_id, id=None, priority=None):
         self.id = id
         self.name = name
         self.description = description
         self.project_id = project_id
+        self.priority = priority
 
     # def __repr__(self):
     #     return f"<Task {self.id}: {self.name}, {self.description}>"
@@ -46,6 +47,24 @@ class Task:
         else:
             raise ValueError("Project ID must be a positive integer")
 
+    @property
+    def priority(self):
+        return self._priority
+
+    @priority.setter
+    def priority(self, priority):
+        try:
+            priority = int(priority)  # Convert input to integer
+        except ValueError:
+            raise ValueError("Priority must be a valid integer")
+
+        if 1 <= priority <= 4:
+            self._priority = priority
+        else:
+            raise ValueError("Priority must be an integer between 1 and 4")
+
+
+
     @classmethod
     def create_table(cls):
         sql = """
@@ -54,6 +73,7 @@ class Task:
             name TEXT,
             description TEXT,
             project_id INTEGER,
+            priority INTEGER,
             FOREIGN KEY(project_id) REFERENCES projects(id))
         """
         CURSOR.execute(sql)
@@ -69,29 +89,28 @@ class Task:
 
     def save(self):
         sql = """
-            INSERT INTO tasks (name, description, project_id)
-            VALUES (?, ?, ?)
+            INSERT INTO tasks (name, description, project_id, priority)
+            VALUES (?, ?, ?, ?)
         """
-
-        CURSOR.execute(sql, (self.name, self.description, self.project_id))
+        CURSOR.execute(sql, (self.name, self.description, self.project_id, self.priority))  # Include priority
         CONN.commit()
 
         self.id = CURSOR.lastrowid
         type(self).all[self.id] = self
 
     @classmethod
-    def create(cls, name, description, project_id):
-        task = cls(name, description, project_id)
+    def create(cls, name, description, project_id, priority):  # Add priority parameter
+        task = cls(name, description, project_id, priority=priority)  # Include priority
         task.save()
         return task
 
     def update(self):
         sql = """
             UPDATE tasks
-            SET name = ?, description = ?, project_id = ?
+            SET name = ?, description = ?, project_id = ?, priority = ?
             WHERE id = ?
         """
-        CURSOR.execute(sql, (self.name, self.description, self.project_id, self.id))
+        CURSOR.execute(sql, (self.name, self.description, self.project_id, self.priority, self.id))  # Include priority
         CONN.commit()
 
     def delete(self):
@@ -113,8 +132,9 @@ class Task:
             task.name = row[1]
             task.description = row[2]
             task.project_id = row[3]
+            task.priority = row[4]  # Update to handle priority
         else:
-            task = cls(row[1], row[2], row[3])
+            task = cls(row[1], row[2], row[3], priority=row[4])  # Include priority
             task.id = row[0]
             cls.all[task.id] = task
         return task
@@ -151,3 +171,4 @@ class Task:
 
         row = CURSOR.execute(sql, (name,)).fetchone()
         return cls.instance_from_db(row) if row else None
+
