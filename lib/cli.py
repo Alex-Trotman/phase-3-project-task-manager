@@ -15,7 +15,7 @@ from helpers import (
     delete_task,
     clear,
     open_project,
-    manage_projects
+    complete_task
 )
 import typer
 
@@ -74,11 +74,41 @@ def project_loop(project_id):
         elif choice == "2":
             edit_task(project_id)
         elif choice == "3":
-            complete_task()
+            complete_task(project_id)
         elif choice == "4":
             delete_task(project_id)
 
-
+def manage_projects():
+    list_projects()
+    while True:
+        manage_projects_menu()
+        choice = input("> ")
+        if choice == "0":
+            clear()
+            main()
+        elif choice == "clear":
+            clear()
+        elif choice == "1":
+            # Create project
+            pass
+        elif choice == "2":
+            # Update project
+            pass
+        elif choice == "3":
+            # Delete project, including all tasks inside project
+            pass
+        elif choice == "4":
+            # Archive project?
+            pass
+            
+        
+def manage_projects_menu():
+    print("Please select an option:")
+    print("0. Back to main menu")
+    print("1. Create task")
+    print("2. Edit task")
+    print("3. Complete task")
+    print("4. Delete task")
         
 def task_menu():
     print("Please select an option:")

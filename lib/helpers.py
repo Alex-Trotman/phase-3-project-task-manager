@@ -158,17 +158,18 @@ def list_project_tasks(project_id):
         table.add_column("Name")
         table.add_column("Description")
         table.add_column("Priority")
+        table.add_column("Completed")
         
         # Using enumerate to assign an index starting from 1 to each task
         for index, task in enumerate(tasks, start=1):
-            table.add_row(str(index), task.name, task.description, str(task.priority))
+            completed_status = "✔" if task.completed else "✘"
+            table.add_row(str(index), task.name, task.description, str(task.priority), completed_status)
         print("*" * 100)
         console.print(table)
     else:
         print(f"Project with ID {project_id} not found")
 
 
-# Task helpers
 def list_tasks():
     tasks = Task.get_all()
 
@@ -178,9 +179,11 @@ def list_tasks():
     table.add_column("Description")
     table.add_column("Priority")
     table.add_column("Project")
+    table.add_column("Completed")
     
     for task in tasks:
-        table.add_row(str(task.id), task.name, task.description, str(task.priority), str(task.project_id))
+        completed_status = "✔" if task.completed else "✘"
+        table.add_row(str(task.id), task.name, task.description, str(task.priority), str(task.project_id), completed_status)
 
     console.print(table)
 
@@ -212,8 +215,10 @@ def create_task(project_id):
         except ValueError:
             print("Priority must be a valid integer.")
 
+    completed = False  # Default to False when creating a task
+
     try:
-        task = Task.create(name, description, project_id, priority)
+        task = Task.create(name, description, project_id, priority, completed)
         clear()
         list_project_tasks(project_id)
         print(f'Success: {task}')
@@ -221,6 +226,7 @@ def create_task(project_id):
         print("Error: Priority must be a valid integer between 1 and 4")
     except Exception as exc:
         print("Error creating task: ", exc)
+
 
 
 
@@ -263,10 +269,20 @@ def edit_task(project_id):
             priority = input(f"Current priority: {task.priority}: ")
             priority = int(priority) if priority else task.priority
 
+            print("Do you want to mark the task as (C)ompleted or (U)ncompleted? (press Enter to keep it unchanged):")
+            completed_action = input(f"Current completion status: {'Completed' if task.completed else 'Uncompleted'}: ").strip().lower()
+            if completed_action == 'c':
+                completed = True
+            elif completed_action == 'u':
+                completed = False
+            else:
+                completed = task.completed
+
             # Updating task properties
             task.name = name
             task.description = description
             task.priority = priority
+            task.completed = completed
             
             # Assuming task.update() commits the changes
             task.update()
@@ -277,6 +293,61 @@ def edit_task(project_id):
             print("Error updating task: ", exc)
     else:
         print(f"Task with ID {selected_task_id} not found")
+
+
+def complete_task(project_id):
+    project = Project.find_by_id(project_id)
+    if not project:
+        print(f"Project with ID {project_id} not found")
+        return
+
+    tasks = project.tasks()
+    if not tasks:
+        print("No tasks found for this project.")
+        return
+
+    # Create a mapping from index to task ID
+    index_to_id = {}
+    for index, task in enumerate(tasks, start=1):
+        index_to_id[index] = task.id
+
+    try:
+        selected_index = int(input("Enter the task number to complete or uncomplete: "))
+        selected_task_id = index_to_id[selected_index]  # Retrieve the actual task ID using the index
+        print(f"Selected task index: {selected_index}, Task ID: {selected_task_id}")
+        selected_task = Task.find_by_id(selected_task_id)
+        if not selected_task:
+            print(f"Task with ID {selected_task_id} not found")
+            return
+
+        # Display current status of the task
+        print(f"Current status of task '{selected_task.name}': {'Completed' if selected_task.completed else 'Not Completed'}")
+
+        # Ask the user if they want to toggle the completion status
+        action = input("Do you want to (C)omplete or (U)ncomplete the task? ").strip().lower()
+        print(f"Selected action: {action}")
+        if action == 'c':
+            selected_task.completed = True
+
+            selected_task.update()
+            print(f"Task '{selected_task.name}' marked as completed")
+        elif action == 'u':
+            # Toggle the completion status to False
+            selected_task.completed = False
+            # Update the task
+            selected_task.update()
+            print(f"Task '{selected_task.name}' marked as not completed")
+        else:
+            print("Invalid action. Please choose 'C' or 'U'.")
+
+        # Clear the screen and list tasks after completing an action
+        clear()
+        list_project_tasks(project_id)
+    except (ValueError, KeyError):
+        print("Invalid task selection.")
+
+
+
 
 
 def delete_task(project_id):

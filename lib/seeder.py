@@ -13,10 +13,10 @@ def seed_database():
     # Create seed data
     project_1 = Project.create("Software Development", "Developing new application features")
     project_2 = Project.create("Marketing Campaign", "Launching new advertising campaign")
-    Task.create("Implement login functionality", "Implement user authentication system", project_1.id, priority=1)
-    Task.create("Design homepage layout", "Create wireframes for the homepage design", project_1.id, priority=2)
-    Task.create("Prepare social media posts", "Create content for Facebook, Instagram, and Twitter", project_2.id, priority=3)
-    Task.create("Conduct market research", "Analyze market trends and customer preferences", project_2.id, priority=4)
+    Task.create("Implement login functionality", "Implement user authentication system", project_1.id, priority=1, completed=False)
+    Task.create("Design homepage layout", "Create wireframes for the homepage design", project_1.id, priority=2, completed=False)
+    Task.create("Prepare social media posts", "Create content for Facebook, Instagram, and Twitter", project_2.id, priority=3, completed=True)
+    Task.create("Conduct market research", "Analyze market trends and customer preferences", project_2.id, priority=4, completed=False)
 
 seed_database()
 print("Seeded database")
