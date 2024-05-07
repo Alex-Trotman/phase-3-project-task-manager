@@ -29,6 +29,7 @@ def list_projects():
     console.print(table)
 
 def open_project():
+    from cli import main
     # Get all projects
     projects = Project.get_all()
     # Create a dictionary to map enumerated indices to project IDs
@@ -49,12 +50,20 @@ def open_project():
     console.print(table)
     
     # User selects which project to enter
-    selected_index = int(input("Select project to enter: "))
-    # Retrieve the actual project ID from the dictionary
-    selected_project_id = index_to_id.get(selected_index)
+    selected_index_input = input("Select project to enter (hit Enter to skip/exit): ").strip()
     
-    # Return the id of the selected project
-    return selected_project_id
+    if not selected_index_input:  # If Enter is pressed
+        clear()
+        main()
+    
+    try:
+        selected_index = int(selected_index_input)
+        selected_project_id = index_to_id.get(selected_index)
+        return selected_project_id
+    except ValueError:
+        print("Invalid input. Please enter a valid index or hit Enter to skip/exit.")
+        return open_project()
+
 
 def find_project_by_name():
     name = input("Enter the project's name: ")
@@ -110,63 +119,79 @@ def find_project_by_id():
 
 
 def create_project():
-    name = input("Enter the project's name: ")
-    description = input("Enter the project's description: ")
+    while True:
+        name = input("Enter the project's name: ")
+        description = input("Enter the project's description: ")
+
+        # Check if a project with the same name already exists
+        existing_project = Project.find_by_name(name)
+        if existing_project:
+            print(f"Error: A project with the name '{name}' already exists. Please enter a different name.")
+        else:
+            break
+
     try:
         project = Project.create(name, description)
         clear()
         list_projects()
-        print(f'Success: {project}')
+        print(f'Success: Project {project.name} created')
     except Exception as exc:
         print("Error creating project: ", exc)
 
 
+
+
 def edit_project():
-    name = input("Enter the project's name: ")
-    projects = Project.get_all()
-    matching_projects = [project for project in projects if name.lower() in project.name.lower()]
-    if matching_projects:
-        if len(matching_projects) == 1:
-            project = matching_projects[0]
-            try:
-                new_name = input(f"Enter the project's new name (current name: {project.name}): ") or project.name
-                new_description = input(f"Enter the project's new description (current description: {project.description}): ") or project.description
-                project.name = new_name
-                project.description = new_description
-                project.update()
-                clear()
-                list_projects()
-                print(f'Success: {project}')
-            except Exception as exc:
-                print("Error updating project: ", exc)
-        else:
-            print("Multiple projects found matching that name. Please refine your search.")
+    name_to_id = {}  # Dictionary to map project names to their IDs
+    projects = Project.get_all()  # Get all projects
+    # Populate the dictionary and display enumerated list of projects
+    for index, project in enumerate(projects, start=1):
+        name_to_id[str(index)] = project.id
+
+    selected_index = input("Enter the number of the project to edit: ")
+    selected_project_id = name_to_id.get(selected_index)
+    if selected_project_id:
+        project = Project.find_by_id(selected_project_id)
+        try:
+            new_name = input(f"Enter the project's new name (current name: {project.name}): ") or project.name
+            new_description = input(f"Enter the project's new description (current description: {project.description}): ") or project.description
+            project.name = new_name
+            project.description = new_description
+            project.update()
+            clear()
+            list_projects()
+            print(f'Success: Project {project.name} updated')
+        except Exception as exc:
+            print("Error updating project: ", exc)
     else:
-        print(f'No projects found matching "{name}"')
+        print("Invalid project selection.")
 
 
 def delete_project():
-    name = input("Enter the project's name: ")
-    projects = Project.get_all()
-    matching_projects = [project for project in projects if name.lower() in project.name.lower()]
-    if matching_projects:
-        if len(matching_projects) == 1:
-            project = matching_projects[0]
-            try:
-                confirmation = input(f"Are you sure you want to delete project '{project.name}'? (yes/no): ").strip().lower()
-                if confirmation == "yes":
-                    project.delete()
-                    clear()
-                    list_projects()
-                    print(f'Project {project.name} deleted')
-                else:
-                    print("Deletion cancelled.")
-            except Exception as exc:
-                print("Error deleting project: ", exc)
-        else:
-            print("Multiple projects found matching that name. Please refine your search.")
+    name_to_id = {}  # Dictionary to map project names to their IDs
+    projects = Project.get_all()  # Get all projects
+    # Populate the dictionary and display enumerated list of projects
+    for index, project in enumerate(projects, start=1):
+        name_to_id[str(index)] = project.id
+
+    selected_index = input("Enter the number of the project to delete: ")
+    selected_project_id = name_to_id.get(selected_index)
+    if selected_project_id:
+        project = Project.find_by_id(selected_project_id)
+        try:
+            confirmation = input(f"Are you sure you want to delete project '{project.name}'? (yes/no): ").strip().lower()
+            if confirmation == "yes":
+                project.delete()
+                clear()
+                list_projects()
+                print(f'Project {project.name} deleted')
+            else:
+                print("Deletion cancelled.")
+        except Exception as exc:
+            print("Error deleting project: ", exc)
     else:
-        print(f'No projects found matching "{name}"')
+        print("Invalid project selection.")
+
 
 
 
