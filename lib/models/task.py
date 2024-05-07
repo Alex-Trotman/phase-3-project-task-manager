@@ -12,9 +12,6 @@ class Task:
         self.priority = priority
         self.completed = completed
 
-    # def __repr__(self):
-    #     return f"<Task {self.id}: {self.name}, {self.description}>"
-
     @property
     def name(self):
         return self._name
@@ -147,9 +144,9 @@ class Task:
             task.description = row[2]
             task.project_id = row[3]
             task.priority = row[4]
-            task.completed = bool(row[5])  # Convert to boolean
+            task.completed = bool(row[5])
         else:
-            task = cls(row[1], row[2], row[3], priority=row[4], completed=bool(row[5]))  # Convert to boolean
+            task = cls(row[1], row[2], row[3], priority=row[4], completed=bool(row[5]))
             task.id = row[0]
             cls.all[task.id] = task
         return task
