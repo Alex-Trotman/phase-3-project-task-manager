@@ -4,7 +4,7 @@ from helpers import (
     find_project_by_name,
     find_project_by_id,
     create_project,
-    update_project,
+    edit_project,
     delete_project,
     list_project_tasks,
     list_tasks,
@@ -89,26 +89,19 @@ def manage_projects():
         elif choice == "clear":
             clear()
         elif choice == "1":
-            # Create project
-            pass
+            create_project()
         elif choice == "2":
-            # Update project
-            pass
+            edit_project()
         elif choice == "3":
-            # Delete project, including all tasks inside project
-            pass
-        elif choice == "4":
-            # Archive project?
-            pass
+            delete_project()
             
         
 def manage_projects_menu():
     print("Please select an option:")
     print("0. Back to main menu")
-    print("1. Create task")
-    print("2. Edit task")
-    print("3. Complete task")
-    print("4. Delete task")
+    print("1. Create project")
+    print("2. Edit project")
+    print("3. Delete project")
         
 def task_menu():
     print("Please select an option:")

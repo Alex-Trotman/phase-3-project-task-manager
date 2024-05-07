@@ -56,9 +56,6 @@ def open_project():
     # Return the id of the selected project
     return selected_project_id
 
-def manage_projects():
-    list_projects()
-
 def find_project_by_name():
     name = input("Enter the project's name: ")
     projects = Project.get_all()
@@ -117,35 +114,60 @@ def create_project():
     description = input("Enter the project's description: ")
     try:
         project = Project.create(name, description)
+        clear()
+        list_projects()
         print(f'Success: {project}')
     except Exception as exc:
         print("Error creating project: ", exc)
 
 
-def update_project():
-    id_ = input("Enter the project's id: ")
-    if project := Project.find_by_id(id_):
-        try:
-            name = input("Enter the project's new name: ")
-            project.name = name
-            description = input("Enter the project's new description: ")
-            project.description = description
-
-            project.update()
-            print(f'Success: {project}')
-        except Exception as exc:
-            print("Error updating project: ", exc)
+def edit_project():
+    name = input("Enter the project's name: ")
+    projects = Project.get_all()
+    matching_projects = [project for project in projects if name.lower() in project.name.lower()]
+    if matching_projects:
+        if len(matching_projects) == 1:
+            project = matching_projects[0]
+            try:
+                new_name = input(f"Enter the project's new name (current name: {project.name}): ") or project.name
+                new_description = input(f"Enter the project's new description (current description: {project.description}): ") or project.description
+                project.name = new_name
+                project.description = new_description
+                project.update()
+                clear()
+                list_projects()
+                print(f'Success: {project}')
+            except Exception as exc:
+                print("Error updating project: ", exc)
+        else:
+            print("Multiple projects found matching that name. Please refine your search.")
     else:
-        print(f'Project {id_} not found')
+        print(f'No projects found matching "{name}"')
 
 
 def delete_project():
-    id_ = input("Enter the project's id: ")
-    if project := Project.find_by_id(id_):
-        project.delete()
-        print(f'Project {id_} deleted')
+    name = input("Enter the project's name: ")
+    projects = Project.get_all()
+    matching_projects = [project for project in projects if name.lower() in project.name.lower()]
+    if matching_projects:
+        if len(matching_projects) == 1:
+            project = matching_projects[0]
+            try:
+                confirmation = input(f"Are you sure you want to delete project '{project.name}'? (yes/no): ").strip().lower()
+                if confirmation == "yes":
+                    project.delete()
+                    clear()
+                    list_projects()
+                    print(f'Project {project.name} deleted')
+                else:
+                    print("Deletion cancelled.")
+            except Exception as exc:
+                print("Error deleting project: ", exc)
+        else:
+            print("Multiple projects found matching that name. Please refine your search.")
     else:
-        print(f'Project {id_} not found')
+        print(f'No projects found matching "{name}"')
+
 
 
 def list_project_tasks(project_id):
