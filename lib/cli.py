@@ -23,6 +23,8 @@ def main():
             exit_program()
         elif choice == "clear":
             clear()
+        elif choice == "exit":
+            exit_program()
         elif choice == "1":
             list_projects()
         elif choice == "2":
@@ -44,6 +46,9 @@ def project_loop(project_id):
             main()
         elif choice == "clear":
             clear()
+        elif choice == "exit":
+            clear()
+            main()
         elif choice == "1":
             create_task(project_id)
         elif choice == "2":
@@ -63,6 +68,9 @@ def manage_projects():
             main()
         elif choice == "clear":
             clear()
+        elif choice == "exit":
+            clear()
+            main()
         elif choice == "1":
             create_project()
         elif choice == "2":
@@ -88,9 +96,11 @@ def task_menu():
 
 
 def menu():
+    print("*" * 100)
+    print("Get organized and stay productive with TaskMaster. Manage your tasks and projects effortlessly.")
     print("Type 'clear' to clear the terminal")
     print("*" * 100)
-    print("Please select an option:")
+    print("Enter the number corresponding to your desired action, or type 'exit' to quit at any time.")
     print("0. Exit the program")
     print("1. List all projects")
     print("2. Open project")
