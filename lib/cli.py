@@ -28,16 +28,16 @@ def main():
         elif choice == "1":
             list_projects()
         elif choice == "2":
-            selected_project = open_project()
+            project = open_project()
             clear()
-            project_loop(selected_project)
+            project_loop(project)
         elif choice == "3":
             manage_projects()
         else:
             print("Invalid choice")
 
-def project_loop(project_id):
-    list_project_tasks(project_id)
+def project_loop(project):
+    list_project_tasks(project)
     while True:
         task_menu()
         choice = input("> ")
@@ -50,13 +50,13 @@ def project_loop(project_id):
             clear()
             main()
         elif choice == "1":
-            create_task(project_id)
+            create_task(project)
         elif choice == "2":
-            edit_task(project_id)
+            edit_task(project)
         elif choice == "3":
-            complete_task(project_id)
+            complete_task(project)
         elif choice == "4":
-            delete_task(project_id)
+            delete_task(project)
 
 def manage_projects():
     list_projects()

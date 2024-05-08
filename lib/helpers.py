@@ -40,24 +40,54 @@ def open_project():
     
     for index, project in enumerate(projects, start=1):
         table.add_row(str(index), project.name, project.description)
-        index_to_id[index] = project.id
+        # index_to_id[index] = project.id
     
     clear()
     console.print(table)
     
-    selected_index_input = input("Select project to enter (hit Enter to skip/exit): ").strip()
-    
+    selected_index_input = input("Select project to enter (hit Enter to skip): ").strip()
+    project = projects[int(selected_index_input) - 1]
+    print(project)
     if not selected_index_input:
         clear()
         main()
     
     try:
-        selected_index = int(selected_index_input)
-        selected_project_id = index_to_id.get(selected_index)
-        return selected_project_id
+        return project
     except ValueError:
-        print("Invalid input. Please enter a valid index or hit Enter to skip/exit.")
+        print("Invalid input. Please enter a valid number or hit Enter to skip.")
         return open_project()
+
+# def open_project():
+#     from cli import main
+#     projects = Project.get_all()
+#     index_to_id = {}
+    
+#     table = Table(title="Projects")
+#     table.add_column("#")
+#     table.add_column("Name")
+#     table.add_column("Description")
+    
+#     for index, project in enumerate(projects, start=1):
+#         table.add_row(str(index), project.name, project.description)
+#         index_to_id[index] = project.id
+    
+#     clear()
+#     console.print(table)
+    
+#     selected_index_input = input("Select project to enter (hit Enter to skip): ").strip()
+#     # project = projects[int(selected_index_input) - 1]
+#     if not selected_index_input:
+#         clear()
+#         main()
+    
+#     try:
+#         selected_index = int(selected_index_input)
+#         selected_project_id = index_to_id.get(selected_index)
+#         return selected_project_id
+#     except ValueError:
+#         print("Invalid input. Please enter a valid index or hit Enter to skip.")
+#         return open_project()
 
 def find_project_by_id():
     id_ = input("Enter the project's id: ")
@@ -74,17 +104,22 @@ def find_project_by_id():
     else:
          print(f'Project {id_} not found')
 
+# def find_project_by_name():
+#     name = input("Enter the project's name: ")
+#     project = Project.find_by_name(name)
+#     print(project) if project else print(
+#         f'Project {name} not found')
 
 def create_project():
     while True:
         name = input("Enter the project's name: ")
         description = input("Enter the project's description: ")
 
-        existing_project = Project.find_by_name(name)
-        if existing_project:
-            print(f"Error: A project with the name '{name}' already exists. Please enter a different name.")
-        else:
-            break
+        # existing_project = Project.find_by_name(name)
+        # if existing_project:
+        #     print(f"Error: A project with the name '{name}' already exists. Please enter a different name.")
+        # else:
+        break
 
     try:
         project = Project.create(name, description)
@@ -148,11 +183,7 @@ def delete_project():
         print("Invalid project selection.")
 
 
-
-
-def list_project_tasks(project_id):
-    project = Project.find_by_id(project_id)
-    
+def list_project_tasks(project):
     if project:
         tasks = project.tasks()
         table = Table(title=f'{project.name} Tasks')
@@ -170,7 +201,27 @@ def list_project_tasks(project_id):
     else:
         print(f"Project with ID {project_id} not found")
 
-def create_task(project_id):
+# def list_project_tasks(project_id):
+#     project = Project.find_by_id(project_id)
+    
+#     if project:
+#         tasks = project.tasks()
+#         table = Table(title=f'{project.name} Tasks')
+#         table.add_column("#")
+#         table.add_column("Name")
+#         table.add_column("Description")
+#         table.add_column("Priority")
+#         table.add_column("Completed")
+        
+#         for index, task in enumerate(tasks, start=1):
+#             completed_status = "✔" if task.completed else "✘"
+#             table.add_row(str(index), task.name, task.description, str(task.priority), completed_status)
+#         print("*" * 100)
+#         console.print(table)
+#     else:
+#         print(f"Project with ID {project_id} not found")
+
+def create_task(project):
     name = input("Enter the task's name: ")
     description = input("Enter the task's description: ")
     while True:
@@ -187,14 +238,40 @@ def create_task(project_id):
     completed = False
 
     try:
-        task = Task.create(name, description, project_id, priority, completed)
+        task = Task.create(name, description, project.id, priority, completed)
         clear()
-        list_project_tasks(project_id)
+        list_project_tasks(project)
         print(f'Success: {task}')
     except ValueError:
         print("Error: Priority must be a valid integer between 1 and 4")
     except Exception as exc:
         print("Error creating task: ", exc)
+
+# def create_task(project_id):
+#     name = input("Enter the task's name: ")
+#     description = input("Enter the task's description: ")
+#     while True:
+#         priority = input("Enter the task's priority (1-4): ")
+#         try:
+#             priority = int(priority)
+#             if 1 <= priority <= 4:
+#                 break
+#             else:
+#                 print("Priority must be an integer between 1 and 4.")
+#         except ValueError:
+#             print("Priority must be a valid integer.")
+
+#     completed = False
+
+#     try:
+#         task = Task.create(name, description, project_id, priority, completed)
+#         clear()
+#         list_project_tasks(project_id)
+#         print(f'Success: {task}')
+#     except ValueError:
+#         print("Error: Priority must be a valid integer between 1 and 4")
+#     except Exception as exc:
+#         print("Error creating task: ", exc)
 
 def edit_task(project_id):
     project = Project.find_by_id(project_id)
