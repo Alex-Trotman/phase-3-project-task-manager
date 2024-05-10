@@ -1,6 +1,6 @@
 # Phase 3 Project: Task Manager
 
-A command-line application to manage tasks and projects efficiently using Python and the `rich` library for CLI visuals.
+A command-line application designed to manage tasks and projects efficiently by leveraging the power of Python. It utilizes the `rich` library to deliver visually appealing and user-friendly interfaces, providing comprehensive tables, menus, and feedback directly in the terminal. Built with object-relational mapping (ORM) methods for seamless database interactions, this tool simplifies task and project management. Users can prioritize tasks, mark tasks as complete, and handle projects with ease through an intuitive CLI interface.
 
 ## Features
 
