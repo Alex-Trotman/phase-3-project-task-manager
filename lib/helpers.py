@@ -157,7 +157,7 @@ def list_project_tasks(project):
         print("*" * 100)
         console.print(table)
     else:
-        print(f"Project with ID {project_id} not found")
+        print(f"Project not found")
 
 def create_task(project):
     name = input("Enter the task's name: ")
