@@ -34,7 +34,12 @@ A command-line application designed to manage tasks and projects efficiently by 
    ```bash
    pipenv shell
    ```
-4. **Run the Application:**
+4. **Seed the Database:**
+   - Seed the database with initial data by running the seed file or script:
+   ```bash
+   python lib/seed.py
+   ```
+5. **Run the Application:**
    ```bash
    python lib/cli.py
    ```
