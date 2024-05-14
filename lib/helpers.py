@@ -50,7 +50,6 @@ def open_project():
 
     # Fetch the chosen project object
     project = projects[int(selected_index_input) - 1]
-    print(project)
 
     # Return the selected project or restart selection on input error
     try:
@@ -60,21 +59,21 @@ def open_project():
         return open_project()
 
 # Find and display a project by its ID
-def find_project_by_id():
-    id_ = input("Enter the project's id: ")
-    project = Project.find_by_id(id_)
-    if project:
-        # Create a table to show project details
-        table = Table(title="Projects")
-        table.add_column("#")
-        table.add_column("Name")
-        table.add_column("Description")
+# def find_project_by_id():
+#     id_ = input("Enter the project's id: ")
+#     project = Project.find_by_id(id_)
+#     if project:
+#         # Create a table to show project details
+#         table = Table(title="Projects")
+#         table.add_column("#")
+#         table.add_column("Name")
+#         table.add_column("Description")
 
-        table.add_row(str(project.id), project.name, project.description)
-        print("*" * 100)
-        console.print(table)
-    else:
-        print(f'Project {id_} not found')
+#         table.add_row(str(project.id), project.name, project.description)
+#         print("*" * 100)
+#         console.print(table)
+#     else:
+#         print(f'Project {id_} not found')
 
 # Create a new project and add it to the database
 def create_project():
